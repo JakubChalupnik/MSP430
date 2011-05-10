@@ -18,47 +18,25 @@
 #include "font.h"
 
 //
-// Include fonts and logos
-//
-
-#ifdef USE_BIG_FONT
-__progmem_const__ unsigned char Font8x16[256][16] = {
-#include "font16.h"
-};
-#endif
-
-#ifdef USE_BIG_BIG_FONT
-__progmem_const__ unsigned char Font16x16[256][32] = {
-#include "font16x16.h"
-};
-#endif
-
-#ifdef USE_LOGO
-__progmem_const__ unsigned char logo[] = {
-#include "image.h"
-};
-#endif
-
-//
 // Locally used defines
 //
 
-#define LEFT    1
-#define RIGHT   0
+#define LEFT    0x01
+#define RIGHT   0x02
 
 //
 // Local variables
 //
 
-static int Side;                       // Left or Right side of LCD
+static int Side;                        // Left or Right side of LCD
 
 //===============================================================
 // command_write (Cdata)
 // Write command data to the LCD
 // See SED1520 datasheet for more info
 //===============================================================
-void LcdCmd (byte Command)
-{                                                // Write Instruction to LCD
+void LcdCmd (byte Command) {
+
     LCD_A0_0 ();
     LcdSetDataBus (Command);
     if (Side == LEFT) {
@@ -72,13 +50,12 @@ void LcdCmd (byte Command)
     }
 }
 
-
 //===============================================================
 // Data write (DData)
 // Writes display data to the LCD
 //===============================================================
-void LcdData (byte Data)
-{                                                // Write Data to LCD
+void LcdData (byte Data) {
+
     LCD_A0_1 ();
     LcdSetDataBus (Data);
     if (Side == LEFT) {
@@ -95,14 +72,13 @@ void LcdData (byte Data)
 //===================================================================
 // Fills the whole display with a specified pattern (clear etc.)
 //===================================================================
-void LcdFill (byte Pattern)
-{
+void LcdFill (byte Pattern) {
     byte displ, page, column;
 
-    for (displ = 0; displ < 2; displ++) {         // Clear both controlers data
+    for (displ = 0; displ < 2; displ++) {       // Clear both controlers data
         Side = displ;
-        for (page = 0; page < 4; page++) {        // Now go through all pages and clear the LCD RAM
-            LcdCmd (0xB8 | page);            // so that the display is cleared
+        for (page = 0; page < 4; page++) {      // Now go through all pages and clear the LCD RAM
+            LcdCmd (0xB8 | page);               // so that the display is cleared
             LcdCmd (0x00);
             for(column = 0; column < 61; column++) {
                 LcdData (Pattern);
@@ -114,31 +90,29 @@ void LcdFill (byte Pattern)
 //===================================================================
 // Set cursor position
 //===================================================================
-void LcdSetCursorPos (byte x, byte y)
-{
+void LcdSetCursorPos (byte x, byte y) {
 
-    if (x <= 60) {                                // Left side
+    if (x <= 60) {                      // Left side
         Side = LEFT;
-    } else if (x <= 121) {                        // Right side
+    } else if (x <= 121) {              // Right side
         x -= 61;
         Side = RIGHT;
     } else {
         return;
     }
 
-    LcdCmd (0xB8 | (y & 0x03));              // Select row
+    LcdCmd (0xB8 | (y & 0x03));         // Select row
     LcdCmd (60 - x);
 }
-
 
 //===================================================================
 // Put a character to a specified row/column
 //===================================================================
-void LcdPutc (byte x, byte y, byte Char)
-{
+void LcdPutc (byte x, byte y, byte Char) {
     byte i;
-    const unsigned char *ptr;
+    __progmem_const__ byte *ptr;
 
+    Char -= 0x20;                       // Adjust to the fact the font starts at 0x20
     ptr = Font5x7[Char];
     i = 5;
     while(i--) {
@@ -150,75 +124,14 @@ void LcdPutc (byte x, byte y, byte Char)
 }
 
 //===================================================================
-// Loads an image from the program memory
-//===================================================================
-void glcd_image(const unsigned char *image)
-{
-    byte page, column;
-
-    for(page = 0; page < 4; page++) {            // Now go through all pages and clear the LCD RAM
-        for(column = 0; column < 122; column++) {
-            LcdSetCursorPos (column, page);
-            LcdData (*image++);
-        }
-    }
-}
-
-#ifdef USE_BIG_FONT
-void glcd_putc_big(byte x, byte y, byte c)
-{
-    byte i, xx;
-    const rom unsigned char *ptr;
-
-    ptr = Font8x16[c];
-    i = 8;
-    xx = x;
-    while(i--) {
-        glcd_putbyte(xx++, y, *ptr++);
-    }
-    glcd_putbyte(xx, y, 0x00);
-    i = 8;
-    xx = x;
-    y++;
-    while(i--) {
-        glcd_putbyte(xx++, y, *ptr++);
-    }
-    glcd_putbyte(xx, y, 0x00);
-}
-#endif
-
-#ifdef USE_BIG_BIG_FONT
-void glcd_putc_big(byte x, byte y, byte c)
-{
-    byte i, xx;
-    const rom unsigned char *ptr;
-
-    ptr = Font16x16[c];
-    i = 16;
-    xx = x;
-    while(i--) {
-        glcd_putbyte(xx++, y, *ptr++);
-    }
-
-    i = 16;
-    xx = x;
-    y++;
-    while(i--) {
-        glcd_putbyte(xx++, y, *ptr++);
-    }
-}
-#endif
-
-//===================================================================
 // Initialise the SED11520 controllers
 // for the display type we are using
 //===================================================================
-void LcdInit (void)
-{
+void LcdInit (void) {
     byte page;
 
     LCD_E1_0 ();                                  // De-select each side to start
-    LCD_E2_0 ();                                  //
+    LCD_E2_0 ();
 
     // Setup both SED1520 controllers
     for(page = 0; page < 2; page++) {
@@ -234,10 +147,5 @@ void LcdInit (void)
         LcdCmd (0x00);                       // in column 0
     }
 
-#ifdef USE_LOGO
-    glcd_image(logo);
-#else
     LcdFill (0x00);
-#endif
-//     Delay100TCYx(200);
 }
