@@ -147,7 +147,7 @@ int main(int argc, char *argv[]) {
 			} else if ((DcfHighLevelLength > 0x900) && 
 				(DcfHighLevelLength < 0xD00) 
 				) {											// Short pulse - logical 0
-				CurrentBit = 1;
+				CurrentBit = 0x8000;
 			} else {
 				Poisoned = 1;
 			}
@@ -155,19 +155,19 @@ int main(int argc, char *argv[]) {
 				// Do nothing, meteo and other info bits
 			} else if (SecondCounter < 28) {
 				// Minutes
-				Minute <<= 1;
+				Minute >>= 1;
 				Minute |= CurrentBit;
 			} else if (SecondCounter < 29) {
 				// Do nothing, parity for 21-28
 			} else if (SecondCounter < 35) {
 				// Hours
-				Hour <<= 1;
+				Hour >>= 1;
 				Hour |= CurrentBit;
 			} else if (SecondCounter < 36) {
 				// Parity for 29 - 35
 			} else if (SecondCounter < 42) {
 				// Day in month
-				Day <<= 1;
+				Day >>= 1;
 				Day |= CurrentBit;
 			} else {
 				// Do nothing
@@ -178,7 +178,9 @@ int main(int argc, char *argv[]) {
 				   ) {
 			if (!Poisoned) {
 				// process the sample
-
+				Minute >>= 9;
+				Hour >>= 10;
+				Day >>= 10;
 				LcdPutHex (60, 2, Minute);
 				LcdPutHex (90, 2, Hour);
 				LcdPutHex (60, 3, Day);
