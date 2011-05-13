@@ -21,7 +21,7 @@ void LcdSetDataBus (byte);
 //
 
 #define __progmem_const__ const
-//#define Nop()
-void Nop (void);
+#define Nop()
+//void Nop (void);
 
 #endif
