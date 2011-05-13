@@ -19,12 +19,12 @@ void BCSplus_init(void)
      * SELM_0 -- DCOCLK
      * DIVM_0 -- Divide by 1
      * ~SELS -- DCOCLK
-     * DIVS_0 -- Divide by 1
+     * DIVS_3 -- Divide by 8
      * ~DCOR -- DCO uses internal resistor
      * 
      * Note: ~<BIT> indicates that <BIT> has value zero
      */
-    BCSCTL2 = SELM_0 + DIVM_0 + DIVS_0;
+    BCSCTL2 = SELM_0 + DIVM_0 + DIVS_3;
 
     if (CALBC1_1MHZ != 0xFF) {
         /* Follow recommended flow. First, clear all DCOx and MODx bits. Then

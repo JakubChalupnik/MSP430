@@ -17,7 +17,7 @@ void GPIO_init(void)
     P1OUT = 0;
 
     /* Port 1 Direction Register */
-    P1DIR = BIT0 + BIT1 + BIT2 + BIT3;
+    P1DIR = BIT0 + BIT1 + BIT2 + BIT3 + BIT7;
 
     /* Port 1 Interrupt Edge Select Register */
     P1IES = 0;
