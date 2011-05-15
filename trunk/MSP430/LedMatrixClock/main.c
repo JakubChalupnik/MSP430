@@ -55,6 +55,7 @@ static volatile word DcfHighPulseLength;
 
 void InitializeCpu (void);
 void DelayMs (word Ms);
+void InitLedMatrix (void);
 
 //
 // Local function prototypes
@@ -154,8 +155,10 @@ void Port1InterruptHandler (void) {
     if (Dcf77DataIn ()) {                       // DCF77 pin is high, that means rising edge
       DcfPeriodLength = TimerRead ();
       TimerStart ();
+      LedRedOn ();
     } else {                                    // DCF77 pin is low, that is falling edge
       DcfHighPulseLength = TimerRead ();
+      LedRedOff ();
     }
   }
 }
@@ -217,10 +220,11 @@ int main (void) {
 
   InitializeCpu ();
   InitializeGpio ();
-  InitializeTimerA ();
-  InitializeDcf77 ();
+//  InitializeTimerA ();
+//  InitializeDcf77 ();
+  InitLedMatrix ();
 
-  while (Dcf77DataIn ()) {}
+  while (1) {}
 
   return 0;
 }

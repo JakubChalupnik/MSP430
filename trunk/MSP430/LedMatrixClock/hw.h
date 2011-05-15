@@ -34,9 +34,14 @@
 #define DCF77_PORT_IN   P1IN
 #define DCF77_PORT_OUT  P1OUT
 #define DCF77_DATA_BIT  BIT4
+#define DCF77_DATA_SHIFT 4
 #define DCF77_PON_BIT   BIT7
 #define DCF77_PORT_IFG  P1IFG
 #define DCF77_PORT_IES  P1IES
+
+#define LED_PORT_OUT    P1OUT
+#define LED_RED_BIT     BIT0
+#define LED_RED_BIT_SHIFT 0
 
 //
 // Define macros to work with the above
@@ -53,5 +58,8 @@
 #define TimerStop()   	{TACTL = (TACTL & ~(MC1 | MC0)) | MC_0;}
 #define TimerStart()  	{TAR = 0; TACTL = (TACTL & ~(MC1 | MC0)) | MC_2;}
 #define TimerRead()   	(TAR)
+
+#define LedRedOn() //	{LED_PORT_OUT |= LED_REC_BIT;}
+#define LedRedOff()// 	{LED_PORT_OUT &= ~LED_REC_BIT;}
 
 #endif //_HW_H
