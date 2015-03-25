@@ -50,6 +50,6 @@
 void DelayMs (word Ms) {
 
   while (Ms--) {
-    __delay_cycles (CPU_FREQUENCY / 1000);
+    __delay_cycles ((CPU_FREQUENCY / 1000) - 35);
   }
 }  

@@ -542,6 +542,6 @@ void InitLedMatrix (void) {
 
   memset (ScreenBuffer, 0, sizeof (ScreenBuffer));
 
-  DisplayCharacter ('1', 0, 0, FontTable);
-  SendBuffer ((byte *) ScreenBuffer, 32);
+//  DisplayCharacter ('1', 0, 0, FontTable);
+//  SendBuffer ((byte *) ScreenBuffer, 32);
 }
